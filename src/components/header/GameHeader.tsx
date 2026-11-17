@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Clock, BookOpen, Sparkles } from 'lucide-react';
+import { Clock, BookOpen, Sparkles, Pause, Play } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const GameHeader: React.FC = () => {
-  const { currentDay, dayCoins, timeLeft, tickTimer, toggleRecipeBook, status } = useGameStore();
+  const { currentDay, dayCoins, timeLeft, tickTimer, toggleRecipeBook, status, isPaused, togglePause } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   useEffect(() => {
@@ -51,16 +51,32 @@ export const GameHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Timer */}
-      <div
-        className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black transition-colors ${
-          timeLeft <= 10
-            ? 'bg-rose-100 text-rose-700 animate-pulse border border-rose-300'
-            : 'bg-cozy-cream text-cozy-espresso border border-cozy-babyPink/60'
-        }`}
-      >
-        <Clock size={13} />
-        <span>{timeLeft}s</span>
+      {/* Timer & Pause Button */}
+      <div className="flex items-center gap-1.5">
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black transition-colors ${
+            timeLeft <= 10
+              ? 'bg-rose-100 text-rose-700 animate-pulse border border-rose-300'
+              : 'bg-cozy-cream text-cozy-espresso border border-cozy-babyPink/60'
+          }`}
+        >
+          <Clock size={13} />
+          <span>{timeLeft}s</span>
+        </div>
+
+        {status === 'PLAYING' && (
+          <button
+            onClick={togglePause}
+            className={`p-1.5 rounded-xl border transition-all active:scale-90 cursor-pointer shadow-xs ${
+              isPaused
+                ? 'bg-amber-400 text-white border-amber-500'
+                : 'bg-cozy-cream hover:bg-cozy-babyPink/60 text-cozy-choco border-cozy-blush/60'
+            }`}
+            title={isPaused ? "Lanjut (Resume)" : "Jeda (Pause)"}
+          >
+            {isPaused ? <Play size={13} className="fill-current" /> : <Pause size={13} />}
+          </button>
+        )}
       </div>
     </div>
   );

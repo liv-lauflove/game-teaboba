@@ -2,6 +2,8 @@
 
 A cozy, cute, feminine tea & bakery mini-game simulator built with **React**, **Vite**, **Tailwind CSS**, **Framer Motion**, and **Zustand**.
 
+![Preview Aesthetic](https://raw.githubusercontent.com/liv-lauflove/game-teaboba/main/PRD.md)
+
 ## ✨ Fitur Utama
 - **Aspect Ratio 9:16:** Didesain pas untuk layar mobile vertikal atau web frame estetik.
 - **Racik Minuman & Foam:** 

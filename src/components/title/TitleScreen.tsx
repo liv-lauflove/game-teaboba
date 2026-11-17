@@ -4,7 +4,7 @@ import { Sparkles, BookOpen } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 
 export const TitleScreen: React.FC = () => {
-  const { goToBriefing, toggleRecipeBook } = useGameStore();
+  const { currentDay, totalCoins, goToBriefing, toggleRecipeBook } = useGameStore();
 
   return (
     <div className="min-h-screen w-full bg-[#3B2F2F] bg-gradient-to-br from-[#2E2424] via-[#3B2F2F] to-[#251D1D] flex items-center justify-center p-2 sm:p-4">
@@ -63,18 +63,24 @@ export const TitleScreen: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="w-full flex flex-col gap-2.5 mb-4">
+          {totalCoins > 0 && (
+            <div className="self-center px-3.5 py-1 rounded-full bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+              <span>🪙 Tabungan: {totalCoins} Koin</span>
+            </div>
+          )}
+
           <motion.button
             whileTap={{ scale: 0.96 }}
-            onClick={() => goToBriefing(1)}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cozy-choco to-[#8B5A3C] text-white font-black text-sm shadow-cozy hover:brightness-110 flex items-center justify-center gap-2 transition-all"
+            onClick={() => goToBriefing(currentDay)}
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cozy-choco to-[#8B5A3C] text-white font-black text-sm shadow-cozy hover:brightness-110 flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <Sparkles size={16} />
-            <span>Mulai Petualangan Kafe ☀️</span>
+            <span>{currentDay > 1 ? `Lanjut Kafe (Hari ${currentDay}) ☀️` : 'Mulai Petualangan Kafe ☀️'}</span>
           </motion.button>
 
           <button
             onClick={toggleRecipeBook}
-            className="w-full py-2.5 rounded-xl bg-white hover:bg-cozy-cream text-cozy-espresso font-bold text-xs border-2 border-cozy-babyPink/80 shadow-xs flex items-center justify-center gap-1.5 transition-all"
+            className="w-full py-2.5 rounded-xl bg-white hover:bg-cozy-cream text-cozy-espresso font-bold text-xs border-2 border-cozy-babyPink/80 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <BookOpen size={14} className="text-cozy-choco" />
             <span>Lihat Buku Resep Kafe</span>

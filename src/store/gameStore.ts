@@ -19,6 +19,7 @@ interface GameState {
   currentSnack: SnackOption;
 
   // Actions
+  goToTitle: () => void;
   goToBriefing: (day?: number) => void;
   startPlayingDay: () => void;
   tickTimer: () => void;
@@ -115,6 +116,17 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   currentCup: { ...initialCup },
   currentSnack: 'NONE',
+
+  goToTitle: () => {
+    set({
+      status: 'TITLE',
+      activeOrder: null,
+      currentCup: { ...initialCup },
+      currentSnack: 'NONE',
+      feedbackMessage: null,
+      showRecipeBook: false,
+    });
+  },
 
   goToBriefing: (day?: number) => {
     const targetDay = day || get().currentDay;

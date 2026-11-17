@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Target, Clock, Unlock } from 'lucide-react';
+import { Sparkles, Target, Clock, Unlock, ArrowLeft } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const DayBriefingModal: React.FC = () => {
-  const { currentDay, startPlayingDay } = useGameStore();
+  const { currentDay, startPlayingDay, goToTitle } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   return (
@@ -77,14 +77,24 @@ export const DayBriefingModal: React.FC = () => {
           </div>
         </div>
 
-        {/* Start Day Button */}
-        <button
-          onClick={startPlayingDay}
-          className="w-full mt-4 py-3 rounded-2xl bg-gradient-to-r from-cozy-choco to-[#8B5A3C] text-white font-extrabold text-sm shadow-md hover:brightness-110 active:scale-95 flex items-center justify-center gap-1.5 transition-all"
-        >
-          <Sparkles size={16} />
-          <span>Buka Kafe Sekarang! ✨</span>
-        </button>
+        {/* Action Buttons */}
+        <div className="w-full mt-4 flex flex-col gap-2">
+          <button
+            onClick={startPlayingDay}
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-cozy-choco to-[#8B5A3C] text-white font-extrabold text-sm shadow-md hover:brightness-110 active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Sparkles size={16} />
+            <span>Buka Kafe Sekarang! ✨</span>
+          </button>
+
+          <button
+            onClick={goToTitle}
+            className="w-full py-2.5 rounded-2xl bg-white/70 hover:bg-white text-cozy-choco/80 hover:text-cozy-espresso font-bold text-xs border border-cozy-blush/60 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            <span>Kembali ke Menu Utama</span>
+          </button>
+        </div>
       </motion.div>
     </div>
   );

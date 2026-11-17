@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { RotateCcw, ArrowRight, Star } from 'lucide-react';
+import { RotateCcw, ArrowRight, Star, Home } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const DaySummaryModal: React.FC = () => {
-  const { status, currentDay, dayCoins, servedSuccessCount, servedWrongCount, nextDay, retryDay } = useGameStore();
+  const { status, currentDay, dayCoins, servedSuccessCount, servedWrongCount, nextDay, retryDay, goToTitle } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   const isSuccess = status === 'DAY_SUMMARY';
@@ -111,11 +111,20 @@ export const DaySummaryModal: React.FC = () => {
           {isSuccess && (
             <button
               onClick={retryDay}
-              className="w-full py-1.5 text-xs font-bold text-cozy-choco/60 hover:text-cozy-choco"
+              className="w-full py-1.5 text-xs font-bold text-cozy-choco/60 hover:text-cozy-choco cursor-pointer"
             >
               Ulangi Hari Ini Lagi 🔄
             </button>
           )}
+
+          {/* Keluar ke Menu Utama */}
+          <button
+            onClick={goToTitle}
+            className="w-full py-2.5 rounded-2xl bg-white/70 hover:bg-white text-cozy-choco/80 hover:text-cozy-espresso font-bold text-xs border border-cozy-blush/60 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Home size={14} />
+            <span>Keluar ke Menu Utama</span>
+          </button>
         </div>
       </motion.div>
     </div>

@@ -148,26 +148,56 @@ src/
 
 ## 7. Rencana Roadmap Pelaksanaan (4 Tahap)
 
-* [ ] **Tahap 1: Setup Proyek, Layout 9:16 & Wireframe Meja Kafe**
-  * Inisialisasi Vite + React + Tailwind + Zustand.
-  * Setup frame 9:16 bergaya layar mobile cantik di tengah layar.
-  * Membagi 3 zona: Atas (Pelanggan), Tengah (Nampan: Gelas + Piring), Bawah (Rak Tombol Bahan).
-  * Menggunakan kotak warna placeholder sesuai palet pastel.
+* [x] **Tahap 1: Setup Proyek, Layout 9:16 & Wireframe Meja Kafe** (Selesai)
+* [x] **Tahap 2: Logika Racik Gelas, Piring & Balon Pikiran** (Selesai)
+* [x] **Tahap 3: Sistem Penilaian, Timer Hari & Siklus Buka Toko** (Selesai)
+* [ ] **Tahap 4: Polishing, Efek Animasi & Sound FX** (Dalam Pengerjaan via 27 Granular Issues)
 
-* [ ] **Tahap 2: Logika Racik Gelas, Piring & Balon Pikiran**
-  * State management Zustand untuk nampan (Gelas + Piring).
-  * Tombol bahan mengisi gelas secara berlapis (Cairan dasar -> Foam / Topping).
-  * Tombol snack menaruh kue di piring.
-  * Tombol "Buang/Reset" untuk membersihkan nampan jika salah racik.
-  * Generator pesanan acak di Balon Pikiran pelanggan dengan indikator visual.
+---
 
-* [ ] **Tahap 3: Sistem Penilaian, Timer Hari & Siklus Buka Toko**
-  * Tombol "Sajikan" memvalidasi kesesuaian racikan nampan dengan pesanan pelanggan.
-  * Efek visual koin bertambah jika benar, pelanggan pergi senang.
-  * Timer hitung mundur hari berjalan.
-  * Layar Rekap Hari (Day Complete / Try Again) dan progresi Day 1 -> Day 2 -> Day 3.
+## 8. Peta Masalah GitHub Lengkap (27 Granular Issues & 8 Milestones)
 
-* [ ] **Tahap 4: Polishing, Efek Animasi & Sound FX**
-  * Integrasi ilustrasi PNG kustom / SVG berestetika cozy anime.
-  * Animasi bounce Framer Motion untuk pelanggan & pesanan.
-  * Efek suara: *pop*, tuang sirup, denting koin, dan audio ambient kafe santai.
+Daftar issue resmi yang telah dipecah menjadi tugas-tugas kecil di [GitHub Issues](https://github.com/liv-lauflove/game-teaboba/issues):
+
+### Milestone 1: Navigasi, Routing & State Siklus Game (Core UX Navigation)
+- [ ] **#1** `[UI/UX] Tombol Navigasi Back pada Layar Day Briefing & Day Summary`
+- [ ] **#9** `[UI/UX] Komponen Modal Pause Menu & Mekanik Freeze Timer`
+- [ ] **#10** `[State] Logika Reset State Bersih saat Restart Hari & Quit ke Main Menu`
+
+### Milestone 2: Karakter Pelanggan & Dialog System ala GPGP
+- [ ] **#2** `[Feature] Visual Layout Karakter Pelanggan Setengah Badan (Bust/Torso) di Balik Meja Kasir`
+- [ ] **#11** `[Feature] Sistem Dua Tombol Respon Balon Dialog: [Okay] dan [What?]`
+- [ ] **#3** `[Visual] Miniatur Ilustrasi Resep Dinamis di Dalam Balon Dialog Pelanggan`
+- [ ] **#12** `[Content] Database Kalimat Dialog Percakapan Pelanggan (Cerita Lucu & Petunjuk Resep)`
+- [ ] **#13** `[Animation] Ekspresi Wajah Pelanggan Reaktif (Netral, Senang, Cemas, Kecewa)`
+
+### Milestone 3: Kepuasan, Kesabaran & Ekonomi Tip (Patience & Tip Jar)
+- [ ] **#4** `[Gameplay] Indikator Kesabaran Pelanggan (Patience Meter) Dinamis per Waktu`
+- [ ] **#14** `[Gameplay] Toples Tip Kasir (Tip Jar) & Rumus Perhitungan Bonus Koin Berdasarkan Kesabaran`
+- [ ] **#15** `[Animation] Efek Partikel & Floating Numbers Koin Melayang saat Pelanggan Memberi Tip`
+
+### Milestone 4: Perakitan Minuman & Piring Camilan (Kitchen Polish)
+- [ ] **#16** `[Gameplay] Mekanik Visual Layering Cairan Minuman (Milk Tea, Matcha) & Es Batu Mengapung`
+- [ ] **#17** `[Gameplay] Mekanik Cold Foam Khusus Matcha (Strawberry Pink, Ube Ungu, Ori Susu)`
+- [ ] **#18** `[Gameplay] Mekanik Topping Boba Mengkilap & Sedotan Dinamis pada Gelas`
+- [ ] **#19** `[Gameplay] Piring Keramik Camilan Mini & Mekanik Menata Cheesecake / Cookies`
+- [ ] **#20** `[UI/UX] Animasi Sapuan Nampan & Peringatan Konfirmasi pada Tombol Reset / Buang`
+
+### Milestone 5: Toko Dekorasi & Upgrade Kafe (Shop & Progression)
+- [ ] **#5** `[Progression] Layar Toko Kafe (End-of-Day Shop) & Katalog Dekorasi Interior`
+- [ ] **#21** `[Progression] Katalog Upgrade Peralatan Barista (Toples Tip Besar, Shaker Cepat, Panci Boba)`
+- [ ] **#22** `[State] Sistem Penyimpanan Progres Kafe ke LocalStorage (Save & Load Game)`
+
+### Milestone 6: Aset Seni, Ilustrasi & Gaya Anime Pastel (Art & Illustrations)
+- [ ] **#6** `[Art] Desain & Integrasi Ilustrasi Karakter Pelanggan PNG Transparan (Bust View)`
+- [ ] **#23** `[Art] Desain Ilustrasi PNG Bahan Minuman, Foam, Es Batu, Gelas & Kue`
+- [ ] **#24** `[Art] Desain Ilustrasi Latar Belakang Kafe (Etalase Roti Paris, Counter Mint, Kanopi Striped)`
+
+### Milestone 7: Tata Suara & Audio Kafe (SFX & BGM)
+- [ ] **#7** `[Audio] Integrasi Efek Suara (SFX) Interaksi Perakitan Dapur (Pop, Tuang, Clink)`
+- [ ] **#25** `[Audio] Integrasi Musik Latar Lo-Fi Cozy Cafe & Kontrol Toggle Mute (BGM & SFX)`
+
+### Milestone 8: Responsivitas Mobile & Rilis (Optimization & Launch)
+- [ ] **#8** `[Deployment] Pengaturan Build Produksi & Otomasi Deployment ke GitHub Pages / Vercel`
+- [ ] **#26** `[Optimization] Ergonomi Kontrol Layar Sentuh Mobile (No-Zoom, Safe-Area Padding, Touch Target)`
+- [ ] **#27** `[Feature] Dukungan PWA (Manifest, App Icon Boba & Offline Cache)`

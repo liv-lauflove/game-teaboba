@@ -12,6 +12,7 @@ interface GameState {
   servedSuccessCount: number;
   servedWrongCount: number;
   showRecipeBook: boolean;
+  isPaused: boolean;
   feedbackMessage: { text: string; type: 'success' | 'error' } | null;
 
   // Active Tray (Perakitan)
@@ -22,6 +23,9 @@ interface GameState {
   goToTitle: () => void;
   goToBriefing: (day?: number) => void;
   startPlayingDay: () => void;
+  togglePause: () => void;
+  pauseGame: () => void;
+  resumeGame: () => void;
   tickTimer: () => void;
   setBase: (base: DrinkBase) => void;
   setIce: (ice: IceOption) => void;
@@ -112,6 +116,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   servedSuccessCount: 0,
   servedWrongCount: 0,
   showRecipeBook: false,
+  isPaused: false,
   feedbackMessage: null,
 
   currentCup: { ...initialCup },
@@ -120,6 +125,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   goToTitle: () => {
     set({
       status: 'TITLE',
+      isPaused: false,
       activeOrder: null,
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
@@ -133,6 +139,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const config = DAYS_CONFIG.find(d => d.dayNumber === targetDay) || DAYS_CONFIG[0];
     set({
       status: 'DAY_BRIEFING',
+      isPaused: false,
       currentDay: targetDay,
       dayCoins: 0,
       timeLeft: config.timeLimitSeconds,
@@ -149,6 +156,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
     set({
       status: 'PLAYING',
+      isPaused: false,
       timeLeft: config.timeLimitSeconds,
       dayCoins: 0,
       servedSuccessCount: 0,
@@ -159,9 +167,25 @@ export const useGameStore = create<GameState>((set, get) => ({
     });
   },
 
-  tickTimer: () => {
-    const { timeLeft, status, dayCoins, currentDay } = get();
+  togglePause: () => {
+    const { status, isPaused } = get();
     if (status !== 'PLAYING') return;
+    set({ isPaused: !isPaused });
+  },
+
+  pauseGame: () => {
+    const { status } = get();
+    if (status !== 'PLAYING') return;
+    set({ isPaused: true });
+  },
+
+  resumeGame: () => {
+    set({ isPaused: false });
+  },
+
+  tickTimer: () => {
+    const { timeLeft, status, dayCoins, currentDay, isPaused } = get();
+    if (status !== 'PLAYING' || isPaused) return;
 
     if (timeLeft <= 1) {
       // Day is over! Check if target reached

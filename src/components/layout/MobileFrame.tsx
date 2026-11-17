@@ -5,6 +5,7 @@ import { TrayArea } from '../tray/TrayArea';
 import { IngredientRack } from '../controls/IngredientRack';
 import { DayBriefingModal } from '../modals/DayBriefingModal';
 import { DaySummaryModal } from '../modals/DaySummaryModal';
+import { PauseModal } from '../modals/PauseModal';
 import { RecipeBookModal } from '../modals/RecipeBookModal';
 import { useGameStore } from '../../store/gameStore';
 
@@ -70,6 +71,7 @@ export const MobileFrame: React.FC = () => {
         {/* Modals & Overlays */}
         {status === 'DAY_BRIEFING' && <DayBriefingModal />}
         {(status === 'DAY_SUMMARY' || status === 'GAME_OVER') && <DaySummaryModal />}
+        <PauseModal />
         <RecipeBookModal />
       </div>
     </div>

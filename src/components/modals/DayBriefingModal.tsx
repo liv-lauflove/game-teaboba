@@ -5,7 +5,7 @@ import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const DayBriefingModal: React.FC = () => {
-  const { currentDay, startPlayingDay, goToTitle } = useGameStore();
+  const { currentDay, startPlayingDay, returnToTitle } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   return (
@@ -88,7 +88,7 @@ export const DayBriefingModal: React.FC = () => {
           </button>
 
           <button
-            onClick={goToTitle}
+            onClick={returnToTitle}
             className="w-full py-2.5 rounded-2xl bg-white/70 hover:bg-white text-cozy-choco/80 hover:text-cozy-espresso font-bold text-xs border border-cozy-blush/60 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <ArrowLeft size={14} />

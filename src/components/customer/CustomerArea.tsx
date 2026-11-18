@@ -2,60 +2,85 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { ThoughtBubble } from './ThoughtBubble';
+import { CustomerBust } from './CustomerBust';
 
 export const CustomerArea: React.FC = () => {
   const { activeOrder } = useGameStore();
 
   if (!activeOrder) {
     return (
-      <div className="h-44 flex flex-col items-center justify-center text-cozy-choco/60">
-        <span className="text-3xl animate-bounce">🚪✨</span>
-        <span className="text-xs font-semibold mt-1">Menunggu pelanggan masuk...</span>
+      <div className="h-48 flex flex-col items-center justify-center text-cozy-choco/60">
+        <span className="text-4xl animate-bounce">🚪✨</span>
+        <span className="text-xs font-bold mt-2 bg-white/70 px-3 py-1 rounded-full border border-cozy-blush/60">
+          Menunggu pelanggan berikutnya...
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="relative pt-2 pb-1 px-4 flex flex-col items-center min-h-[190px] justify-between">
-      {/* Thought Bubble with Order */}
+    <div className="relative w-full flex flex-col items-center justify-between min-h-[225px] select-none">
+      {/* 1. Speech / Thought Bubble (Top Layer) */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeOrder.id}
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="w-full z-10"
+          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.85 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+          className="w-full z-30 px-3 pt-1"
         >
           <ThoughtBubble order={activeOrder} />
         </motion.div>
       </AnimatePresence>
 
-      {/* Customer Character & Name Tag */}
-      <motion.div
-        key={`customer-${activeOrder.id}`}
-        initial={{ x: 50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 18 }}
-        className="flex items-center gap-2 mt-2"
-      >
-        <div className="relative">
-          {/* Avatar Ring */}
-          <div className="w-12 h-12 rounded-full bg-cozy-babyPink/80 border-2 border-white shadow-soft flex items-center justify-center text-2xl select-none">
-            {activeOrder.customerAvatar}
-          </div>
-          {/* Heart indicator */}
-          <span className="absolute -bottom-1 -right-1 text-xs">💖</span>
+      {/* 2. Customer Behind Counter Stage (Good Pizza, Great Pizza View) */}
+      <div className="relative w-full flex flex-col items-center mt-1">
+        {/* Back Layer: Half-Body Customer Bust Standing Behind Counter */}
+        <div className="relative z-10 -mb-3 flex justify-center">
+          <CustomerBust
+            visual={activeOrder.customerVisual}
+            name={activeOrder.customerName}
+          />
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xs px-2.5 py-1 rounded-full border border-cozy-blush/60 shadow-xs">
-          <span className="text-xs font-bold text-cozy-espresso">
-            {activeOrder.customerName}
-          </span>
-          <span className="text-[10px] text-cozy-choco/70 ml-1.5 italic">
-            "{activeOrder.dialogue}"
-          </span>
+        {/* Front Layer: Counter Top Divider with Register & Tip Jar */}
+        <div className="relative z-20 w-full h-8 bg-gradient-to-b from-[#E8F4F6] via-[#D6E9ED] to-[#BDDCE1] border-t-[2.5px] border-b-2 border-cozy-choco/75 shadow-sm flex items-center justify-between px-3">
+          {/* Left: Cash Register & Tip Jar Props */}
+          <div className="flex items-center gap-1.5">
+            {/* Retro Cash Register */}
+            <div
+              className="flex items-center gap-1 bg-[#4A3B32] text-amber-200 px-1.5 py-0.5 rounded-md border border-[#30231C] shadow-xs cursor-default"
+              title="Mesin Kasir Kafe"
+            >
+              <span className="text-xs">📟</span>
+              <span className="text-[9px] font-black tracking-wider">KASIR</span>
+            </div>
+
+            {/* Glass Tip Jar */}
+            <div
+              className="flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-1.5 py-0.5 rounded-md border border-cozy-choco/40 shadow-xs cursor-default"
+              title="Toples Tip Kasir"
+            >
+              <span className="text-xs">🫙</span>
+              <span className="text-[9px] text-amber-700 font-black">TIP</span>
+            </div>
+          </div>
+
+          {/* Right: Customer Name Tag Badge */}
+          <motion.div
+            key={`nametag-${activeOrder.id}`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/95 backdrop-blur-xs px-2.5 py-0.5 rounded-full border border-cozy-blush/80 shadow-xs flex items-center gap-1"
+          >
+            <span className="text-xs">{activeOrder.customerAvatar}</span>
+            <span className="text-[11px] font-extrabold text-cozy-espresso">
+              {activeOrder.customerName}
+            </span>
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

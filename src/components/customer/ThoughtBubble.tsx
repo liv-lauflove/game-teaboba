@@ -19,9 +19,14 @@ export const ThoughtBubble: React.FC<ThoughtBubbleProps> = ({ order }) => {
       {/* Cute speech/thought bubble tail */}
       <div className="absolute -bottom-2.5 left-10 w-4 h-4 bg-white border-b-2 border-r-2 border-cozy-blush/80 transform rotate-45" />
 
+      {/* Customer Speech Bubble Header */}
+      <div className="text-[11px] font-bold text-cozy-espresso italic bg-cozy-cream/70 px-2 py-1 rounded-lg border border-cozy-babyPink/60 mb-1 leading-snug">
+        "{order.dialogue}"
+      </div>
+
       {/* Header thought prompt */}
-      <div className="flex items-center justify-between text-[11px] font-bold text-cozy-choco/80 pb-1 mb-1 border-b border-cozy-babyPink/60">
-        <span>Pesanan Keinginan:</span>
+      <div className="flex items-center justify-between text-[10px] font-bold text-cozy-choco/80 pb-1 mb-1 border-b border-cozy-babyPink/60">
+        <span>Petunjuk Resep:</span>
         <span className="text-cozy-choco font-black">+{order.rewardCoins} 🪙</span>
       </div>
 

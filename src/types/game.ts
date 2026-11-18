@@ -11,10 +11,23 @@ export interface DrinkRecipe {
   foam: FoamOption;
 }
 
+export type HairStyle = 'TWIN_BUNS' | 'LONG_WAVY' | 'BLONDE_CURLS' | 'STRAIGHT_DARK' | 'BOB_CUT';
+export type CustomerAccessory = 'RIBBON' | 'BERET' | 'APRON' | 'FLOWER' | 'GLASSES';
+
+export interface CustomerVisual {
+  id: string;
+  hairColor: string;
+  hairStyle: HairStyle;
+  shirtColor: string;
+  accessory?: CustomerAccessory;
+  skinTone: string;
+}
+
 export interface CustomerOrder {
   id: string;
   customerName: string;
   customerAvatar: string; // emoji or image key
+  customerVisual: CustomerVisual;
   dialogue: string;
   drink: {
     base: DrinkBase;

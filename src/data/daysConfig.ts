@@ -1,4 +1,11 @@
-import { DayConfig } from '../types/game';
+import { DayConfig, CustomerVisual } from '../types/game';
+
+export interface CustomerPreset {
+  name: string;
+  avatar: string;
+  quote: string;
+  visual: CustomerVisual;
+}
 
 export const DAYS_CONFIG: DayConfig[] = [
   {
@@ -47,10 +54,70 @@ export const DAYS_CONFIG: DayConfig[] = [
   }
 ];
 
-export const CUSTOMER_PRESETS = [
-  { name: "Mimi", avatar: "🎀", quote: "Aku mau minuman yang manis dan imut ya!" },
-  { name: "Luna", avatar: "🌸", quote: "Lagi santai sepulang kuliah, mau pesan sesuatu yang hangat." },
-  { name: "Chloë", avatar: "🍰", quote: "Kue di etalasemu wangi banget dari luar!" },
-  { name: "Aoi", avatar: "🍵", quote: "Paling suka matcha dengan foam estetik untuk difoto!" },
-  { name: "Bella", avatar: "✨", quote: "Butuh boba manis untuk recharge hari ini~" }
+export const CUSTOMER_PRESETS: CustomerPreset[] = [
+  {
+    name: "Mimi",
+    avatar: "🎀",
+    quote: "Aku mau minuman yang manis dan imut ya!",
+    visual: {
+      id: 'mimi',
+      hairColor: '#E098A5', // cute pastel rose
+      hairStyle: 'TWIN_BUNS',
+      shirtColor: '#F7DAD9', // baby pink
+      accessory: 'RIBBON',
+      skinTone: '#FFF0E5'
+    }
+  },
+  {
+    name: "Luna",
+    avatar: "🌸",
+    quote: "Lagi santai sepulang kuliah, mau pesan sesuatu yang hangat.",
+    visual: {
+      id: 'luna',
+      hairColor: '#A899C2', // lavender purple
+      hairStyle: 'LONG_WAVY',
+      shirtColor: '#E8DFF5', // soft lilac
+      accessory: 'BERET',
+      skinTone: '#FFF5EB'
+    }
+  },
+  {
+    name: "Chloë",
+    avatar: "🍰",
+    quote: "Kue di etalasemu wangi banget dari luar!",
+    visual: {
+      id: 'chloe',
+      hairColor: '#F3D296', // warm honey blonde
+      hairStyle: 'BLONDE_CURLS',
+      shirtColor: '#FBF2C0', // vanilla butter
+      accessory: 'APRON',
+      skinTone: '#FFF2E8'
+    }
+  },
+  {
+    name: "Aoi",
+    avatar: "🍵",
+    quote: "Paling suka matcha dengan foam estetik untuk difoto!",
+    visual: {
+      id: 'aoi',
+      hairColor: '#3A3F47', // sleek dark slate
+      hairStyle: 'STRAIGHT_DARK',
+      shirtColor: '#D4E5D4', // soft matcha cardigan
+      accessory: 'GLASSES',
+      skinTone: '#FFF0EA'
+    }
+  },
+  {
+    name: "Bella",
+    avatar: "✨",
+    quote: "Butuh boba manis untuk recharge hari ini~",
+    visual: {
+      id: 'bella',
+      hairColor: '#C4815E', // soft caramel brown
+      hairStyle: 'BOB_CUT',
+      shirtColor: '#FFD0CD', // soft blush coral
+      accessory: 'FLOWER',
+      skinTone: '#FFF3EB'
+    }
+  }
 ];

@@ -20,6 +20,8 @@ interface GameState {
   currentSnack: SnackOption;
 
   // Actions
+  returnToTitle: () => void;
+  resetDaySession: () => void;
   goToTitle: () => void;
   goToBriefing: (day?: number) => void;
   startPlayingDay: () => void;
@@ -122,7 +124,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentCup: { ...initialCup },
   currentSnack: 'NONE',
 
-  goToTitle: () => {
+  returnToTitle: () => {
     set({
       status: 'TITLE',
       isPaused: false,
@@ -132,6 +134,28 @@ export const useGameStore = create<GameState>((set, get) => ({
       feedbackMessage: null,
       showRecipeBook: false,
     });
+  },
+
+  resetDaySession: () => {
+    const { currentDay } = get();
+    const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
+    set({
+      status: 'PLAYING',
+      isPaused: false,
+      timeLeft: config.timeLimitSeconds,
+      dayCoins: 0,
+      servedSuccessCount: 0,
+      servedWrongCount: 0,
+      currentCup: { ...initialCup },
+      currentSnack: 'NONE',
+      feedbackMessage: null,
+      showRecipeBook: false,
+      activeOrder: generateRandomOrder(currentDay),
+    });
+  },
+
+  goToTitle: () => {
+    get().returnToTitle();
   },
 
   goToBriefing: (day?: number) => {

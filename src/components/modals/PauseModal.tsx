@@ -4,7 +4,7 @@ import { Play, RotateCcw, BookOpen, Home, X, Coffee } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 
 export const PauseModal: React.FC = () => {
-  const { isPaused, resumeGame, retryDay, toggleRecipeBook, goToTitle, currentDay } = useGameStore();
+  const { isPaused, resumeGame, resetDaySession, toggleRecipeBook, returnToTitle, currentDay } = useGameStore();
 
   if (!isPaused) return null;
 
@@ -58,7 +58,7 @@ export const PauseModal: React.FC = () => {
 
             {/* 2. Restart Button */}
             <button
-              onClick={retryDay}
+              onClick={resetDaySession}
               className="w-full py-2.5 rounded-2xl bg-amber-100/90 hover:bg-amber-200/90 text-amber-900 font-bold text-xs border border-amber-300 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <RotateCcw size={14} />
@@ -76,7 +76,7 @@ export const PauseModal: React.FC = () => {
 
             {/* 4. Quit to Title */}
             <button
-              onClick={goToTitle}
+              onClick={returnToTitle}
               className="w-full py-2 rounded-xl text-xs font-bold text-cozy-choco/70 hover:text-cozy-espresso flex items-center justify-center gap-1.5 transition-colors cursor-pointer mt-1"
             >
               <Home size={13} />

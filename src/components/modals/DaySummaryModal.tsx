@@ -6,7 +6,7 @@ import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const DaySummaryModal: React.FC = () => {
-  const { status, currentDay, dayCoins, servedSuccessCount, servedWrongCount, nextDay, retryDay, goToTitle } = useGameStore();
+  const { status, currentDay, dayCoins, servedSuccessCount, servedWrongCount, nextDay, resetDaySession, returnToTitle } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   const isSuccess = status === 'DAY_SUMMARY';
@@ -100,8 +100,8 @@ export const DaySummaryModal: React.FC = () => {
             )
           ) : (
             <button
-              onClick={retryDay}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-400 to-cozy-choco text-white font-black text-sm shadow-md hover:brightness-105 active:scale-95 flex items-center justify-center gap-1.5 transition-all"
+              onClick={resetDaySession}
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-400 to-cozy-choco text-white font-black text-sm shadow-md hover:brightness-105 active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <RotateCcw size={15} />
               <span>Coba Hari {currentDay} Lagi</span>
@@ -110,7 +110,7 @@ export const DaySummaryModal: React.FC = () => {
 
           {isSuccess && (
             <button
-              onClick={retryDay}
+              onClick={resetDaySession}
               className="w-full py-1.5 text-xs font-bold text-cozy-choco/60 hover:text-cozy-choco cursor-pointer"
             >
               Ulangi Hari Ini Lagi 🔄
@@ -119,7 +119,7 @@ export const DaySummaryModal: React.FC = () => {
 
           {/* Keluar ke Menu Utama */}
           <button
-            onClick={goToTitle}
+            onClick={returnToTitle}
             className="w-full py-2.5 rounded-2xl bg-white/70 hover:bg-white text-cozy-choco/80 hover:text-cozy-espresso font-bold text-xs border border-cozy-blush/60 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <Home size={14} />

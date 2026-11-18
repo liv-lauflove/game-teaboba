@@ -101,6 +101,7 @@ export function generateRandomOrder(dayNumber: number): CustomerOrder {
     id: `order-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
     customerName: customer.name,
     customerAvatar: customer.avatar,
+    customerVisual: customer.visual,
     dialogue: customer.quote,
     drink: drinkOrder,
     snack: snackOrder,

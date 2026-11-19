@@ -1,139 +1,82 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 import { CustomerOrder } from '../../types/game';
+import { RecipeMiniCup } from './RecipeMiniCup';
+import { RecipeMiniPlate } from './RecipeMiniPlate';
 
 interface ThoughtBubbleProps {
   order: CustomerOrder;
 }
 
+export function getOrderTitle(order: CustomerOrder): string {
+  const parts: string[] = [];
+
+  if (order.drink) {
+    if (order.drink.base === 'MATCHA') {
+      if (order.drink.foam === 'STRAWBERRY_FOAM') parts.push('Strawberry Matcha');
+      else if (order.drink.foam === 'UBE_FOAM') parts.push('Ube Matcha');
+      else if (order.drink.foam === 'ORIGINAL_FOAM') parts.push('Creamy Matcha');
+      else parts.push('Matcha Latte');
+    } else {
+      if (order.drink.topping === 'BOBA') parts.push('Boba Milk Tea');
+      else if (order.drink.topping === 'JELLY') parts.push('Jelly Milk Tea');
+      else parts.push('Classic Milk Tea');
+    }
+  }
+
+  if (order.snack !== 'NONE') {
+    if (order.snack === 'CHEESECAKE') parts.push('Cheesecake');
+    else if (order.snack === 'CHOCO_COOKIE') parts.push('Choco Cookie');
+    else if (order.snack === 'MATCHA_COOKIE') parts.push('Matcha Cookie');
+  }
+
+  return parts.length > 0 ? parts.join(' + ') : 'Pesanan Spesial';
+}
+
 export const ThoughtBubble: React.FC<ThoughtBubbleProps> = ({ order }) => {
   const { drink, snack } = order;
+  const orderTitle = getOrderTitle(order);
 
   return (
     <motion.div
-      initial={{ scale: 0.7, opacity: 0, y: 10 }}
+      initial={{ scale: 0.85, opacity: 0, y: -8 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="relative bg-white/95 backdrop-blur-sm border-2 border-cozy-blush/80 rounded-2xl p-3 shadow-cozy max-w-[280px] mx-auto text-cozy-espresso"
+      exit={{ scale: 0.85, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+      className="relative bg-white/95 backdrop-blur-md border-[2.5px] border-cozy-blush/90 rounded-2xl p-2.5 shadow-cozy max-w-[310px] mx-auto text-cozy-espresso select-none"
     >
-      {/* Cute speech/thought bubble tail */}
-      <div className="absolute -bottom-2.5 left-10 w-4 h-4 bg-white border-b-2 border-r-2 border-cozy-blush/80 transform rotate-45" />
+      {/* Speech Pointer Tail pointing downwards to customer */}
+      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b-[2.5px] border-r-[2.5px] border-cozy-blush/90 rotate-45" />
 
-      {/* Customer Speech Bubble Header */}
-      <div className="text-[11px] font-bold text-cozy-espresso italic bg-cozy-cream/70 px-2 py-1 rounded-lg border border-cozy-babyPink/60 mb-1 leading-snug">
+      {/* 1. Customer Dialogue Quote Balloon (GPGP Style) */}
+      <div className="text-[11px] font-bold text-cozy-espresso italic bg-[#FFF8E7]/90 px-2.5 py-1.5 rounded-xl border border-cozy-babyPink/70 mb-2 leading-relaxed text-center">
         "{order.dialogue}"
       </div>
 
-      {/* Header thought prompt */}
-      <div className="flex items-center justify-between text-[10px] font-bold text-cozy-choco/80 pb-1 mb-1 border-b border-cozy-babyPink/60">
-        <span>Petunjuk Resep:</span>
-        <span className="text-cozy-choco font-black">+{order.rewardCoins} 🪙</span>
+      {/* 2. Order Header & Reward Coin */}
+      <div className="flex items-center justify-between text-[10px] font-extrabold text-cozy-choco/80 pb-1 mb-1.5 border-b border-cozy-babyPink/60">
+        <div className="flex items-center gap-1">
+          <Sparkles size={11} className="text-cozy-choco" />
+          <span className="text-cozy-espresso tracking-tight">{orderTitle}</span>
+        </div>
+        <span className="text-amber-800 font-black px-1.5 py-0.5 rounded-md bg-amber-100 border border-amber-300">
+          +{order.rewardCoins} 🪙
+        </span>
       </div>
 
-      <div className="flex items-center justify-center gap-3 py-1">
-        {/* Visual Mini Cup */}
-        {drink && (
-          <div className="flex flex-col items-center">
-            {/* Visual Mini Glass Illustration */}
-            <div className="relative w-12 h-16 border-2 border-cozy-espresso/30 rounded-b-xl rounded-t-sm bg-white/50 overflow-hidden flex flex-col justify-end shadow-inner-soft">
-              {/* Foam Layer (Top) */}
-              {drink.base === 'MATCHA' && drink.foam && drink.foam !== 'NONE' && (
-                <div
-                  className={`absolute top-0 left-0 right-0 h-4 border-b border-black/10 flex items-center justify-center text-[9px] font-extrabold ${
-                    drink.foam === 'STRAWBERRY_FOAM'
-                      ? 'bg-cozy-blush text-rose-700'
-                      : drink.foam === 'UBE_FOAM'
-                      ? 'bg-cozy-ube text-purple-800'
-                      : 'bg-cozy-cream text-amber-800'
-                  }`}
-                  title={drink.foam}
-                >
-                  {drink.foam === 'STRAWBERRY_FOAM' && '🍓'}
-                  {drink.foam === 'UBE_FOAM' && '🍠'}
-                  {drink.foam === 'ORIGINAL_FOAM' && '🥛'}
-                </div>
-              )}
+      {/* 3. Visual Recipe Miniature Display Tray */}
+      <div className="flex items-center justify-center gap-4 py-0.5 bg-cozy-cream/40 rounded-xl p-1.5 border border-cozy-babyPink/40">
+        {/* Dynamic Miniature Cup */}
+        {drink && <RecipeMiniCup drink={drink} />}
 
-              {/* Liquid Base */}
-              <div
-                className={`w-full flex-1 transition-colors duration-300 flex items-center justify-center ${
-                  drink.base === 'MATCHA'
-                    ? 'bg-[#9BB59A]'
-                    : 'bg-[#D4A373]'
-                }`}
-              >
-                {/* Ice Badge inside */}
-                {drink.ice === 'NORMAL_ICE' ? (
-                  <span className="text-[10px] select-none opacity-80">🧊</span>
-                ) : (
-                  <span className="text-[8px] font-bold bg-white/70 px-1 rounded text-cozy-espresso">No Ice</span>
-                )}
-              </div>
-
-              {/* Topping Bottom Layer (Boba/Jelly) */}
-              {drink.topping === 'BOBA' && (
-                <div className="h-3.5 bg-cozy-choco/90 flex items-center justify-center gap-0.5 px-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-black/60 inline-block"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-black/60 inline-block"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-black/60 inline-block"></span>
-                </div>
-              )}
-            </div>
-
-            {/* Label Drink Description */}
-            <span className="text-[10px] font-bold text-center mt-1 text-cozy-espresso leading-tight">
-              {drink.base === 'MATCHA' ? (
-                <>
-                  Matcha
-                  <br />
-                  <span className={`px-1 rounded-full text-[9px] ${
-                    drink.foam === 'STRAWBERRY_FOAM'
-                      ? 'bg-pink-100 text-pink-700'
-                      : drink.foam === 'UBE_FOAM'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'bg-amber-100 text-amber-700'
-                  }`}>
-                    {drink.foam === 'STRAWBERRY_FOAM' && 'Strawb. Foam'}
-                    {drink.foam === 'UBE_FOAM' && 'Ube Foam'}
-                    {drink.foam === 'ORIGINAL_FOAM' && 'Ori Foam'}
-                  </span>
-                </>
-              ) : (
-                <>
-                  Milk Tea
-                  <br />
-                  <span className="text-[9px] text-cozy-choco/90">
-                    {drink.topping === 'BOBA' ? '+ Boba' : '(Polos)'}
-                  </span>
-                </>
-              )}
-            </span>
-          </div>
-        )}
-
-        {/* Plus separator if combo order */}
+        {/* Plus Divider if combo drink & snack */}
         {drink && snack !== 'NONE' && (
-          <span className="text-cozy-choco/40 font-black text-sm">+</span>
+          <span className="text-cozy-choco/50 font-black text-xs">+</span>
         )}
 
-        {/* Visual Mini Snack */}
-        {snack !== 'NONE' && (
-          <div className="flex flex-col items-center">
-            {/* Visual Plate */}
-            <div className="w-14 h-12 bg-cozy-cream border-2 border-cozy-espresso/20 rounded-full flex items-center justify-center shadow-inner-soft">
-              <span className="text-2xl drop-shadow-sm select-none">
-                {snack === 'CHEESECAKE' && '🍰'}
-                {snack === 'CHOCO_COOKIE' && '🍪'}
-                {snack === 'MATCHA_COOKIE' && '🍵🍪'}
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-center mt-1 text-cozy-espresso leading-tight">
-              {snack === 'CHEESECAKE' && 'Cheesecake'}
-              {snack === 'CHOCO_COOKIE' && 'Choco Cookie'}
-              {snack === 'MATCHA_COOKIE' && 'Matcha Cookie'}
-            </span>
-          </div>
-        )}
+        {/* Dynamic Miniature Snack Plate */}
+        {snack !== 'NONE' && <RecipeMiniPlate snack={snack} />}
       </div>
     </motion.div>
   );

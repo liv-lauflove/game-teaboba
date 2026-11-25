@@ -15,6 +15,12 @@ interface GameState {
   isPaused: boolean;
   feedbackMessage: { text: string; type: 'success' | 'error' } | null;
 
+  // Dialogue & GPGP Interaction
+  customerPatience: number;
+  isOrderConfirmed: boolean;
+  isClarified: boolean;
+  patiencePenaltyTrigger: number;
+
   // Active Tray (Perakitan)
   currentCup: DrinkRecipe;
   currentSnack: SnackOption;
@@ -29,6 +35,8 @@ interface GameState {
   pauseGame: () => void;
   resumeGame: () => void;
   tickTimer: () => void;
+  confirmOrder: () => void;
+  askClarification: () => void;
   setBase: (base: DrinkBase) => void;
   setIce: (ice: IceOption) => void;
   setTopping: (topping: ToppingOption) => void;
@@ -48,6 +56,38 @@ const initialCup: DrinkRecipe = {
   topping: 'NONE',
   foam: 'NONE',
 };
+
+// Helper: Technical recipe explanation generator (GPGP What? response)
+export function getRecipeClarification(order: { drink: CustomerOrder['drink']; snack: SnackOption }): string {
+  const parts: string[] = [];
+
+  if (order.drink) {
+    const iceText = order.drink.ice === 'NO_ICE' ? 'tanpa es' : 'dingin';
+    if (order.drink.base === 'MATCHA') {
+      let foamText = '';
+      if (order.drink.foam === 'STRAWBERRY_FOAM') foamText = ' + Strawberry Foam pink di atasnya';
+      else if (order.drink.foam === 'UBE_FOAM') foamText = ' + Ube Foam ungu di atasnya';
+      else if (order.drink.foam === 'ORIGINAL_FOAM') foamText = ' + Original Milk Foam lembut di atasnya';
+
+      parts.push(`Matcha ${iceText}${foamText}`);
+    } else {
+      let toppingText = '';
+      if (order.drink.topping === 'BOBA') toppingText = ' + topping Boba kenyal';
+      else if (order.drink.topping === 'JELLY') toppingText = ' + Grass Jelly';
+
+      parts.push(`Milk Tea ${iceText}${toppingText}`);
+    }
+  }
+
+  if (order.snack !== 'NONE') {
+    if (order.snack === 'CHEESECAKE') parts.push('sepotong Classic Cheesecake');
+    else if (order.snack === 'CHOCO_COOKIE') parts.push('Choco Chip Cookie');
+    else if (order.snack === 'MATCHA_COOKIE') parts.push('Matcha Cookie');
+  }
+
+  if (parts.length === 0) return 'Maksudku: apa saja yang manis dan lezat ya, terima kasih!';
+  return `Maksudku: ${parts.join(' dan ')} ya, terima kasih!`;
+}
 
 // Helper: Generate Random Order based on currently unlocked ingredients in the day
 export function generateRandomOrder(dayNumber: number): CustomerOrder {
@@ -97,7 +137,7 @@ export function generateRandomOrder(dayNumber: number): CustomerOrder {
     totalReward = 30;
   }
 
-  return {
+  const baseOrder = {
     id: `order-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
     customerName: customer.name,
     customerAvatar: customer.avatar,
@@ -106,6 +146,11 @@ export function generateRandomOrder(dayNumber: number): CustomerOrder {
     drink: drinkOrder,
     snack: snackOrder,
     rewardCoins: totalReward
+  };
+
+  return {
+    ...baseOrder,
+    clarificationText: getRecipeClarification(baseOrder)
   };
 }
 
@@ -122,6 +167,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   isPaused: false,
   feedbackMessage: null,
 
+  // Dialogue & GPGP Interaction
+  customerPatience: 100,
+  isOrderConfirmed: false,
+  isClarified: false,
+  patiencePenaltyTrigger: 0,
+
   currentCup: { ...initialCup },
   currentSnack: 'NONE',
 
@@ -130,6 +181,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       status: 'TITLE',
       isPaused: false,
       activeOrder: null,
+      customerPatience: 100,
+      isOrderConfirmed: false,
+      isClarified: false,
+      patiencePenaltyTrigger: 0,
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
       feedbackMessage: null,
@@ -147,6 +202,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       dayCoins: 0,
       servedSuccessCount: 0,
       servedWrongCount: 0,
+      customerPatience: 100,
+      isOrderConfirmed: false,
+      isClarified: false,
+      patiencePenaltyTrigger: 0,
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
       feedbackMessage: null,
@@ -170,6 +229,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       timeLeft: config.timeLimitSeconds,
       servedSuccessCount: 0,
       servedWrongCount: 0,
+      customerPatience: 100,
+      isOrderConfirmed: false,
+      isClarified: false,
+      patiencePenaltyTrigger: 0,
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
       feedbackMessage: null,
@@ -186,6 +249,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       dayCoins: 0,
       servedSuccessCount: 0,
       servedWrongCount: 0,
+      customerPatience: 100,
+      isOrderConfirmed: false,
+      isClarified: false,
+      patiencePenaltyTrigger: 0,
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
       activeOrder: generateRandomOrder(currentDay)
@@ -206,6 +273,21 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   resumeGame: () => {
     set({ isPaused: false });
+  },
+
+  confirmOrder: () => {
+    set({ isOrderConfirmed: true });
+  },
+
+  askClarification: () => {
+    const { activeOrder, customerPatience, patiencePenaltyTrigger } = get();
+    if (!activeOrder) return;
+    const newPatience = Math.max(10, customerPatience - 8);
+    set({
+      customerPatience: newPatience,
+      isClarified: true,
+      patiencePenaltyTrigger: patiencePenaltyTrigger + 1
+    });
   },
 
   tickTimer: () => {
@@ -313,6 +395,10 @@ export const useGameStore = create<GameState>((set, get) => ({
         dayCoins: dayCoins + reward,
         totalCoins: totalCoins + reward,
         servedSuccessCount: servedSuccessCount + 1,
+        customerPatience: 100,
+        isOrderConfirmed: false,
+        isClarified: false,
+        patiencePenaltyTrigger: 0,
         currentCup: { ...initialCup },
         currentSnack: 'NONE',
         feedbackMessage: { text: `Sempurna! +${reward} Koin 🌸`, type: 'success' },

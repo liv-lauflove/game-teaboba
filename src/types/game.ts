@@ -29,6 +29,7 @@ export interface CustomerOrder {
   customerAvatar: string; // emoji or image key
   customerVisual: CustomerVisual;
   dialogue: string;
+  clarificationText?: string;
   drink: {
     base: DrinkBase;
     ice: IceOption;

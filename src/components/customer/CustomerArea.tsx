@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Heart } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { ThoughtBubble } from './ThoughtBubble';
 import { CustomerBust } from './CustomerBust';
 
 export const CustomerArea: React.FC = () => {
-  const { activeOrder } = useGameStore();
+  const { activeOrder, customerPatience, patiencePenaltyTrigger } = useGameStore();
 
   if (!activeOrder) {
     return (
@@ -20,6 +21,31 @@ export const CustomerArea: React.FC = () => {
 
   return (
     <div className="relative w-full flex flex-col items-center justify-between min-h-[225px] select-none">
+      {/* Floating Broken Heart Penalty Feedback */}
+      <AnimatePresence>
+        {patiencePenaltyTrigger > 0 && (
+          <motion.div
+            key={`penalty-${patiencePenaltyTrigger}`}
+            initial={{ opacity: 0, y: 0, scale: 0.6 }}
+            animate={{
+              opacity: [0, 1, 1, 0],
+              y: [-5, -25, -45, -60],
+              scale: [0.7, 1.15, 1.05, 0.9]
+            }}
+            transition={{ duration: 1.5, ease: 'easeOut' }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none flex items-center gap-1.5 bg-rose-600/90 text-white px-3 py-1 rounded-full shadow-lg border-2 border-white text-xs font-black backdrop-blur-xs"
+          >
+            <motion.span
+              animate={{ scale: [1, 1.35, 1, 1.25, 1] }}
+              transition={{ duration: 0.6, repeat: 1 }}
+            >
+              💔
+            </motion.span>
+            <span>-8% Kesabaran</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 1. Speech / Thought Bubble (Top Layer) */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -42,6 +68,26 @@ export const CustomerArea: React.FC = () => {
             visual={activeOrder.customerVisual}
             name={activeOrder.customerName}
           />
+
+          {/* Reactive sweat drop when asked to repeat */}
+          <AnimatePresence>
+            {patiencePenaltyTrigger > 0 && (
+              <motion.div
+                key={`sweat-${patiencePenaltyTrigger}`}
+                initial={{ opacity: 0, scale: 0, y: 5 }}
+                animate={{
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.5, 1.25, 1, 0.8],
+                  y: [0, -12, -8, 2]
+                }}
+                transition={{ duration: 1.4 }}
+                className="absolute top-3 right-1/4 z-30 pointer-events-none text-xl"
+                title="Pelanggan cemas"
+              >
+                💧
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Front Layer: Counter Top Divider with Register & Tip Jar */}
@@ -65,6 +111,28 @@ export const CustomerArea: React.FC = () => {
               <span className="text-xs">🫙</span>
               <span className="text-[9px] text-amber-700 font-black">TIP</span>
             </div>
+          </div>
+
+          {/* Center: Patience Heart Indicator */}
+          <div
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border shadow-xs transition-colors ${
+              customerPatience >= 85
+                ? 'bg-rose-50/95 text-rose-700 border-rose-300'
+                : customerPatience >= 60
+                ? 'bg-amber-50/95 text-amber-700 border-amber-300'
+                : 'bg-red-50/95 text-red-700 border-red-300'
+            }`}
+            title="Tingkat Kesabaran Pelanggan"
+          >
+            <Heart
+              size={11}
+              className={`fill-current ${
+                customerPatience >= 85
+                  ? 'text-rose-500'
+                  : 'text-amber-500 animate-pulse'
+              }`}
+            />
+            <span>{customerPatience}%</span>
           </div>
 
           {/* Right: Customer Name Tag Badge */}

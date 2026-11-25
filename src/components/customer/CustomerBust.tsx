@@ -1,14 +1,40 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { CustomerVisual } from '../../types/game';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CustomerExpression, CustomerVisual } from '../../types/game';
 
 interface CustomerBustProps {
   visual: CustomerVisual;
   name: string;
+  expression?: CustomerExpression;
 }
 
-export const CustomerBust: React.FC<CustomerBustProps> = ({ visual }) => {
+const BROW_PATHS: Record<CustomerExpression, [string, string]> = {
+  NEUTRAL: ['M 52 53 Q 57 51 62 53', 'M 78 53 Q 83 51 88 53'],
+  HAPPY: ['M 52 51 Q 57 48 62 51', 'M 78 51 Q 83 48 88 51'],
+  ANXIOUS: ['M 51 54 Q 56 50 62 51', 'M 78 51 Q 84 50 89 54'],
+  ANGRY: ['M 52 51 L 62 55', 'M 88 51 L 78 55'],
+  SURPRISED: ['M 51 49 Q 57 45 63 49', 'M 77 49 Q 83 45 89 49'],
+};
+
+const MOUTH_PATHS: Record<CustomerExpression, string> = {
+  NEUTRAL: 'M 66 73 Q 70 78 74 73',
+  HAPPY: 'M 64 72 Q 70 81 76 72 Z',
+  ANXIOUS: 'M 65 75 Q 67.5 72 70 75 Q 72.5 78 75 75',
+  ANGRY: 'M 65 76 Q 70 72 75 76',
+  SURPRISED: '',
+};
+
+const AMBIENT_EFFECT: Partial<Record<CustomerExpression, { icon: string; pos: string; label: string }>> = {
+  HAPPY: { icon: '🌸', pos: '-top-1 right-2', label: 'Pelanggan senang' },
+  ANXIOUS: { icon: '💧', pos: 'top-2 right-4', label: 'Pelanggan cemas' },
+  SURPRISED: { icon: '❓', pos: 'top-0 right-3', label: 'Pelanggan terkejut' },
+  ANGRY: { icon: '💢', pos: 'top-0 right-3', label: 'Pelanggan kecewa' },
+};
+
+export const CustomerBust: React.FC<CustomerBustProps> = ({ visual, expression = 'NEUTRAL' }) => {
   const { hairColor, hairStyle, shirtColor, accessory, skinTone } = visual;
+  const [leftBrow, rightBrow] = BROW_PATHS[expression];
+  const effect = AMBIENT_EFFECT[expression];
 
   return (
     <motion.div
@@ -18,10 +44,27 @@ export const CustomerBust: React.FC<CustomerBustProps> = ({ visual }) => {
       transition={{ type: 'spring', stiffness: 180, damping: 22 }}
       className="relative flex flex-col items-center select-none"
     >
+      {/* Ambient Anime Reaction Particle */}
+      <AnimatePresence>
+        {effect && (
+          <motion.span
+            key={expression}
+            initial={{ opacity: 0, scale: 0.4, y: 6 }}
+            animate={{ opacity: 1, scale: [1, 1.2, 1], y: [0, -4, 0] }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.8, repeat: expression === 'HAPPY' ? 1 : Infinity, repeatDelay: 0.6 }}
+            className={`absolute ${effect.pos} z-30 pointer-events-none text-lg`}
+            title={effect.label}
+          >
+            {effect.icon}
+          </motion.span>
+        )}
+      </AnimatePresence>
+
       {/* Idle Breathing / Bobbing Animation Wrapper */}
       <motion.div
-        animate={{ y: [0, -3.5, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ y: expression === 'ANXIOUS' ? [0, -1.5, 0] : [0, -3.5, 0] }}
+        transition={{ duration: expression === 'ANXIOUS' ? 0.9 : 3.2, repeat: Infinity, ease: 'easeInOut' }}
         className="relative w-36 h-36 flex items-end justify-center"
       >
         <svg
@@ -105,34 +148,49 @@ export const CustomerBust: React.FC<CustomerBustProps> = ({ visual }) => {
             />
 
             {/* Cute Cheeks Blush */}
-            <ellipse cx="53" cy="71" rx="5" ry="3" fill="#FFB7B2" opacity="0.8" />
-            <ellipse cx="87" cy="71" rx="5" ry="3" fill="#FFB7B2" opacity="0.8" />
+            <ellipse cx="53" cy="71" rx="5" ry="3" fill="#FFB7B2" opacity={expression === 'HAPPY' ? 1 : 0.8} />
+            <ellipse cx="87" cy="71" rx="5" ry="3" fill="#FFB7B2" opacity={expression === 'HAPPY' ? 1 : 0.8} />
 
-            {/* Anime Eyes */}
+            {/* Anime Eyes & Eyebrows */}
             <g id="eyes">
-              {/* Left Eye */}
-              <ellipse cx="57" cy="62" rx="4.5" ry="5.5" fill="#3E2723" />
-              <circle cx="58.5" cy="60" r="1.8" fill="#FFFFFF" />
-              <circle cx="55.5" cy="64" r="0.9" fill="#FFFFFF" />
-              {/* Left Eyebrow */}
-              <path d="M 52 53 Q 57 51 62 53" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-              {/* Right Eye */}
-              <ellipse cx="83" cy="62" rx="4.5" ry="5.5" fill="#3E2723" />
-              <circle cx="84.5" cy="60" r="1.8" fill="#FFFFFF" />
-              <circle cx="81.5" cy="64" r="0.9" fill="#FFFFFF" />
-              {/* Right Eyebrow */}
-              <path d="M 78 53 Q 83 51 88 53" stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              {expression === 'HAPPY' ? (
+                <>
+                  <path d="M 52 63 Q 57 57 62 63" stroke="#3E2723" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+                  <path d="M 78 63 Q 83 57 88 63" stroke="#3E2723" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+                </>
+              ) : expression === 'SURPRISED' ? (
+                <>
+                  <circle cx="57" cy="62" r="5" fill="#FFFFFF" stroke="#3E2723" strokeWidth="1.8" />
+                  <circle cx="57" cy="62" r="1.8" fill="#3E2723" />
+                  <circle cx="83" cy="62" r="5" fill="#FFFFFF" stroke="#3E2723" strokeWidth="1.8" />
+                  <circle cx="83" cy="62" r="1.8" fill="#3E2723" />
+                </>
+              ) : (
+                <>
+                  <ellipse cx="57" cy="62" rx="4.5" ry="5.5" fill="#3E2723" />
+                  <circle cx="58.5" cy="60" r="1.8" fill="#FFFFFF" />
+                  <circle cx="55.5" cy="64" r="0.9" fill="#FFFFFF" />
+                  <ellipse cx="83" cy="62" rx="4.5" ry="5.5" fill="#3E2723" />
+                  <circle cx="84.5" cy="60" r="1.8" fill="#FFFFFF" />
+                  <circle cx="81.5" cy="64" r="0.9" fill="#FFFFFF" />
+                </>
+              )}
+              <path d={leftBrow} stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              <path d={rightBrow} stroke="#5D4037" strokeWidth="1.8" strokeLinecap="round" fill="none" />
             </g>
 
-            {/* Sweet Smile */}
-            <path
-              d="M 66 73 Q 70 78 74 73"
-              stroke="#795548"
-              strokeWidth="2"
-              strokeLinecap="round"
-              fill="none"
-            />
+            {/* Reactive Mouth */}
+            {expression === 'SURPRISED' ? (
+              <circle cx="70" cy="74" r="2.8" fill="#E57373" stroke="#795548" strokeWidth="1.8" />
+            ) : (
+              <path
+                d={MOUTH_PATHS[expression]}
+                stroke="#795548"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill={expression === 'HAPPY' ? '#E57373' : 'none'}
+              />
+            )}
 
             {/* Small Cute Nose */}
             <circle cx="70" cy="68" r="1" fill="#D7CCC8" />

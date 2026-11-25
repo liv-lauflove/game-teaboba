@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { DrinkBase, DrinkRecipe, FoamOption, GameStatus, IceOption, SnackOption, ToppingOption, CustomerOrder } from '../types/game';
 import { DAYS_CONFIG, CUSTOMER_PRESETS } from '../data/daysConfig';
+import { getCustomerDialogue } from '../data/dialogueDatabase';
 
 interface GameState {
   status: GameStatus;
@@ -137,20 +138,18 @@ export function generateRandomOrder(dayNumber: number): CustomerOrder {
     totalReward = 30;
   }
 
-  const baseOrder = {
+  const dialogueEntry = getCustomerDialogue(customer.name, drinkOrder, snackOrder);
+
+  return {
     id: `order-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
     customerName: customer.name,
     customerAvatar: customer.avatar,
     customerVisual: customer.visual,
-    dialogue: customer.quote,
+    dialogue: dialogueEntry.initial,
+    clarificationText: dialogueEntry.clarification || getRecipeClarification({ drink: drinkOrder, snack: snackOrder }),
     drink: drinkOrder,
     snack: snackOrder,
     rewardCoins: totalReward
-  };
-
-  return {
-    ...baseOrder,
-    clarificationText: getRecipeClarification(baseOrder)
   };
 }
 

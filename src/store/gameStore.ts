@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DrinkBase, DrinkRecipe, FoamOption, GameStatus, IceOption, SnackOption, ToppingOption, CustomerOrder } from '../types/game';
+import { DrinkBase, DrinkRecipe, FoamOption, GameStatus, IceOption, SnackOption, ToppingOption, CustomerOrder, CustomerExpression } from '../types/game';
 import { DAYS_CONFIG, CUSTOMER_PRESETS } from '../data/daysConfig';
 import { getCustomerDialogue } from '../data/dialogueDatabase';
 
@@ -18,6 +18,7 @@ interface GameState {
 
   // Dialogue & GPGP Interaction
   customerPatience: number;
+  customerExpression: CustomerExpression;
   isOrderConfirmed: boolean;
   isClarified: boolean;
   patiencePenaltyTrigger: number;
@@ -38,6 +39,7 @@ interface GameState {
   tickTimer: () => void;
   confirmOrder: () => void;
   askClarification: () => void;
+  setExpression: (expression: CustomerExpression) => void;
   setBase: (base: DrinkBase) => void;
   setIce: (ice: IceOption) => void;
   setTopping: (topping: ToppingOption) => void;
@@ -168,6 +170,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   // Dialogue & GPGP Interaction
   customerPatience: 100,
+  customerExpression: 'NEUTRAL',
   isOrderConfirmed: false,
   isClarified: false,
   patiencePenaltyTrigger: 0,
@@ -181,6 +184,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       isPaused: false,
       activeOrder: null,
       customerPatience: 100,
+      customerExpression: 'NEUTRAL',
       isOrderConfirmed: false,
       isClarified: false,
       patiencePenaltyTrigger: 0,
@@ -202,6 +206,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       servedSuccessCount: 0,
       servedWrongCount: 0,
       customerPatience: 100,
+      customerExpression: 'NEUTRAL',
       isOrderConfirmed: false,
       isClarified: false,
       patiencePenaltyTrigger: 0,
@@ -229,6 +234,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       servedSuccessCount: 0,
       servedWrongCount: 0,
       customerPatience: 100,
+      customerExpression: 'NEUTRAL',
       isOrderConfirmed: false,
       isClarified: false,
       patiencePenaltyTrigger: 0,
@@ -249,6 +255,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       servedSuccessCount: 0,
       servedWrongCount: 0,
       customerPatience: 100,
+      customerExpression: 'NEUTRAL',
       isOrderConfirmed: false,
       isClarified: false,
       patiencePenaltyTrigger: 0,
@@ -275,7 +282,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   confirmOrder: () => {
-    set({ isOrderConfirmed: true });
+    const { customerPatience } = get();
+    set({
+      isOrderConfirmed: true,
+      customerExpression: customerPatience < 40 ? 'ANXIOUS' : 'NEUTRAL'
+    });
   },
 
   askClarification: () => {
@@ -284,9 +295,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     const newPatience = Math.max(10, customerPatience - 8);
     set({
       customerPatience: newPatience,
+      customerExpression: newPatience < 40 ? 'ANXIOUS' : 'NEUTRAL',
       isClarified: true,
       patiencePenaltyTrigger: patiencePenaltyTrigger + 1
     });
+  },
+
+  setExpression: (customerExpression: CustomerExpression) => {
+    set({ customerExpression });
   },
 
   tickTimer: () => {
@@ -350,9 +366,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   clearTray: () => {
+    const { customerPatience } = get();
     set({
       currentCup: { ...initialCup },
       currentSnack: 'NONE',
+      customerExpression: customerPatience < 40 ? 'ANXIOUS' : 'NEUTRAL',
       feedbackMessage: { text: "Nampan dibersihkan! 🫧", type: 'error' }
     });
   },
@@ -395,6 +413,7 @@ export const useGameStore = create<GameState>((set, get) => ({
         totalCoins: totalCoins + reward,
         servedSuccessCount: servedSuccessCount + 1,
         customerPatience: 100,
+        customerExpression: 'HAPPY',
         isOrderConfirmed: false,
         isClarified: false,
         patiencePenaltyTrigger: 0,
@@ -407,6 +426,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     } else {
       set({
         servedWrongCount: servedWrongCount + 1,
+        customerExpression: servedWrongCount >= 1 ? 'ANGRY' : 'SURPRISED',
         feedbackMessage: { text: "Pesanan kurang tepat! Cek lagi yaa 😿", type: 'error' }
       });
       return { success: false, coins: 0 };

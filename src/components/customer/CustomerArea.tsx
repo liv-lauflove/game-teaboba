@@ -6,7 +6,7 @@ import { ThoughtBubble } from './ThoughtBubble';
 import { CustomerBust } from './CustomerBust';
 
 export const CustomerArea: React.FC = () => {
-  const { activeOrder, customerPatience, patiencePenaltyTrigger } = useGameStore();
+  const { activeOrder, customerPatience, customerExpression, patiencePenaltyTrigger } = useGameStore();
 
   if (!activeOrder) {
     return (
@@ -67,6 +67,7 @@ export const CustomerArea: React.FC = () => {
           <CustomerBust
             visual={activeOrder.customerVisual}
             name={activeOrder.customerName}
+            expression={customerExpression}
           />
 
           {/* Reactive sweat drop when asked to repeat */}

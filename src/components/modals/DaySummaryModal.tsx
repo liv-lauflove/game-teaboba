@@ -6,7 +6,7 @@ import { useGameStore } from '../../store/gameStore';
 import { DAYS_CONFIG } from '../../data/daysConfig';
 
 export const DaySummaryModal: React.FC = () => {
-  const { status, currentDay, dayCoins, servedSuccessCount, servedWrongCount, nextDay, resetDaySession, returnToTitle } = useGameStore();
+  const { status, currentDay, dayCoins, dayTipCoins, servedSuccessCount, servedWrongCount, nextDay, resetDaySession, returnToTitle } = useGameStore();
   const config = DAYS_CONFIG.find(d => d.dayNumber === currentDay) || DAYS_CONFIG[0];
 
   const isSuccess = status === 'DAY_SUMMARY';
@@ -64,6 +64,13 @@ export const DaySummaryModal: React.FC = () => {
             <span className="font-bold text-cozy-choco/80">Koin Didapat</span>
             <span className="font-black text-sm text-amber-600">
               🪙 {dayCoins} / {config.targetCoins}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between pb-1.5 border-b border-black/5">
+            <span className="font-bold text-cozy-choco/80">Tip Kasir</span>
+            <span className="font-black text-amber-700">
+              🫙 +{dayTipCoins} koin
             </span>
           </div>
 

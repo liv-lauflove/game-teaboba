@@ -8,6 +8,7 @@ interface GameState {
   currentDay: number;
   totalCoins: number;
   dayCoins: number;
+  dayTipCoins: number;
   timeLeft: number;
   activeOrder: CustomerOrder | null;
   servedSuccessCount: number;
@@ -46,7 +47,7 @@ interface GameState {
   setFoam: (foam: FoamOption) => void;
   setSnack: (snack: SnackOption) => void;
   clearTray: () => void;
-  serveOrder: () => { success: boolean; coins: number };
+  serveOrder: () => { success: boolean; coins: number; tip: number };
   nextDay: () => void;
   retryDay: () => void;
   toggleRecipeBook: () => void;
@@ -59,6 +60,12 @@ const initialCup: DrinkRecipe = {
   topping: 'NONE',
   foam: 'NONE',
 };
+
+export function calculateTipBonus(baseCoins: number, patience: number): number {
+  if (patience > 85) return Math.round(baseCoins * 0.3);
+  if (patience >= 60) return Math.round(baseCoins * 0.15);
+  return 0;
+}
 
 // Helper: Technical recipe explanation generator (GPGP What? response)
 export function getRecipeClarification(order: { drink: CustomerOrder['drink']; snack: SnackOption }): string {
@@ -160,6 +167,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentDay: 1,
   totalCoins: 0,
   dayCoins: 0,
+  dayTipCoins: 0,
   timeLeft: 60,
   activeOrder: null,
   servedSuccessCount: 0,
@@ -203,6 +211,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       isPaused: false,
       timeLeft: config.timeLimitSeconds,
       dayCoins: 0,
+      dayTipCoins: 0,
       servedSuccessCount: 0,
       servedWrongCount: 0,
       customerPatience: 100,
@@ -230,6 +239,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       isPaused: false,
       currentDay: targetDay,
       dayCoins: 0,
+      dayTipCoins: 0,
       timeLeft: config.timeLimitSeconds,
       servedSuccessCount: 0,
       servedWrongCount: 0,
@@ -252,6 +262,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       isPaused: false,
       timeLeft: config.timeLimitSeconds,
       dayCoins: 0,
+      dayTipCoins: 0,
       servedSuccessCount: 0,
       servedWrongCount: 0,
       customerPatience: 100,
@@ -408,8 +419,11 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   serveOrder: () => {
-    const { activeOrder, currentCup, currentSnack, currentDay, dayCoins, totalCoins, servedSuccessCount, servedWrongCount } = get();
-    if (!activeOrder) return { success: false, coins: 0 };
+    const {
+      activeOrder, currentCup, currentSnack, currentDay,
+      dayCoins, dayTipCoins, totalCoins, servedSuccessCount, servedWrongCount, customerPatience
+    } = get();
+    if (!activeOrder) return { success: false, coins: 0, tip: 0 };
 
     let isDrinkValid = true;
     let isSnackValid = true;
@@ -439,9 +453,12 @@ export const useGameStore = create<GameState>((set, get) => ({
     const isFullMatch = isDrinkValid && isSnackValid;
 
     if (isFullMatch) {
-      const reward = activeOrder.rewardCoins;
+      const baseReward = activeOrder.rewardCoins;
+      const tip = calculateTipBonus(baseReward, customerPatience);
+      const reward = baseReward + tip;
       set({
         dayCoins: dayCoins + reward,
+        dayTipCoins: dayTipCoins + tip,
         totalCoins: totalCoins + reward,
         servedSuccessCount: servedSuccessCount + 1,
         customerPatience: 100,
@@ -451,17 +468,20 @@ export const useGameStore = create<GameState>((set, get) => ({
         patiencePenaltyTrigger: 0,
         currentCup: { ...initialCup },
         currentSnack: 'NONE',
-        feedbackMessage: { text: `Sempurna! +${reward} Koin 🌸`, type: 'success' },
+        feedbackMessage: {
+          text: tip > 0 ? `Sempurna! +${baseReward} Koin (+${tip} Tip 🫙)` : `Sempurna! +${baseReward} Koin 🌸`,
+          type: 'success'
+        },
         activeOrder: generateRandomOrder(currentDay)
       });
-      return { success: true, coins: reward };
+      return { success: true, coins: reward, tip };
     } else {
       set({
         servedWrongCount: servedWrongCount + 1,
         customerExpression: servedWrongCount >= 1 ? 'ANGRY' : 'SURPRISED',
         feedbackMessage: { text: "Pesanan kurang tepat! Cek lagi yaa 😿", type: 'error' }
       });
-      return { success: false, coins: 0 };
+      return { success: false, coins: 0, tip: 0 };
     }
   },
 

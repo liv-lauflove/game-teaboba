@@ -15,7 +15,7 @@ function getPatienceTier(patience: number) {
 }
 
 export const CustomerArea: React.FC = () => {
-  const { activeOrder, customerPatience, customerExpression, patiencePenaltyTrigger } = useGameStore();
+  const { activeOrder, customerPatience, customerExpression, dayTipCoins, patiencePenaltyTrigger } = useGameStore();
   const patiencePct = Math.max(0, Math.min(100, Math.ceil(customerPatience)));
   const tier = getPatienceTier(patiencePct);
 
@@ -117,11 +117,17 @@ export const CustomerArea: React.FC = () => {
 
             {/* Glass Tip Jar */}
             <div
-              className="flex items-center gap-0.5 bg-white/80 backdrop-blur-xs px-1.5 py-0.5 rounded-md border border-cozy-choco/40 shadow-xs cursor-default"
-              title="Toples Tip Kasir"
+              className={`flex items-center gap-1 backdrop-blur-xs px-1.5 py-0.5 rounded-md border shadow-xs cursor-default transition-colors ${
+                dayTipCoins > 0
+                  ? 'bg-amber-50/95 border-amber-300'
+                  : 'bg-white/80 border-cozy-choco/40'
+              }`}
+              title={`Toples Tip Kasir: +${dayTipCoins} Koin hari ini`}
             >
               <span className="text-xs">🫙</span>
-              <span className="text-[9px] text-amber-700 font-black">TIP</span>
+              <span className="text-[9px] text-amber-800 font-black">
+                {dayTipCoins > 0 ? `+${dayTipCoins}` : 'TIP'}
+              </span>
             </div>
           </div>
 

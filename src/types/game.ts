@@ -13,6 +13,7 @@ export interface DrinkRecipe {
 
 export type HairStyle = 'TWIN_BUNS' | 'LONG_WAVY' | 'BLONDE_CURLS' | 'STRAIGHT_DARK' | 'BOB_CUT';
 export type CustomerAccessory = 'RIBBON' | 'BERET' | 'APRON' | 'FLOWER' | 'GLASSES';
+export type CustomerExpression = 'NEUTRAL' | 'HAPPY' | 'ANXIOUS' | 'ANGRY' | 'SURPRISED';
 
 export interface CustomerVisual {
   id: string;

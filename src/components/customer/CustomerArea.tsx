@@ -1,12 +1,23 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart } from 'lucide-react';
 import { useGameStore } from '../../store/gameStore';
 import { ThoughtBubble } from './ThoughtBubble';
 import { CustomerBust } from './CustomerBust';
 
+function getPatienceTier(patience: number) {
+  if (patience >= 70) {
+    return { icon: '💖', badge: 'bg-emerald-50/95 text-emerald-700 border-emerald-300', bar: 'bg-emerald-400', label: 'Senang' };
+  }
+  if (patience >= 35) {
+    return { icon: '💬', badge: 'bg-amber-50/95 text-amber-800 border-amber-300', bar: 'bg-amber-400', label: 'Menunggu' };
+  }
+  return { icon: '💢', badge: 'bg-rose-100/95 text-rose-700 border-rose-300 animate-pulse', bar: 'bg-rose-400', label: 'Cemas' };
+}
+
 export const CustomerArea: React.FC = () => {
   const { activeOrder, customerPatience, customerExpression, patiencePenaltyTrigger } = useGameStore();
+  const patiencePct = Math.max(0, Math.min(100, Math.ceil(customerPatience)));
+  const tier = getPatienceTier(patiencePct);
 
   if (!activeOrder) {
     return (
@@ -114,26 +125,19 @@ export const CustomerArea: React.FC = () => {
             </div>
           </div>
 
-          {/* Center: Patience Heart Indicator */}
+          {/* Center: 3-Tier Cozy Patience Meter */}
           <div
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border shadow-xs transition-colors ${
-              customerPatience >= 85
-                ? 'bg-rose-50/95 text-rose-700 border-rose-300'
-                : customerPatience >= 60
-                ? 'bg-amber-50/95 text-amber-700 border-amber-300'
-                : 'bg-red-50/95 text-red-700 border-red-300'
-            }`}
-            title="Tingkat Kesabaran Pelanggan"
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black border shadow-xs transition-colors duration-500 ${tier.badge}`}
+            title={`Kesabaran Pelanggan: ${tier.label} (${patiencePct}%)`}
           >
-            <Heart
-              size={11}
-              className={`fill-current ${
-                customerPatience >= 85
-                  ? 'text-rose-500'
-                  : 'text-amber-500 animate-pulse'
-              }`}
-            />
-            <span>{customerPatience}%</span>
+            <span className="text-[11px] leading-none">{tier.icon}</span>
+            <div className="w-10 h-1.5 bg-white/80 rounded-full overflow-hidden border border-black/5">
+              <div
+                className={`h-full ${tier.bar} transition-all duration-700 ease-linear`}
+                style={{ width: `${patiencePct}%` }}
+              />
+            </div>
+            <span>{patiencePct}%</span>
           </div>
 
           {/* Right: Customer Name Tag Badge */}

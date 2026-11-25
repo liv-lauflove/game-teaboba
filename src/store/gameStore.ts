@@ -306,7 +306,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   tickTimer: () => {
-    const { timeLeft, status, dayCoins, currentDay, isPaused } = get();
+    const {
+      timeLeft, status, dayCoins, currentDay, isPaused,
+      activeOrder, customerPatience, customerExpression, servedWrongCount
+    } = get();
     if (status !== 'PLAYING' || isPaused) return;
 
     if (timeLeft <= 1) {
@@ -317,9 +320,38 @@ export const useGameStore = create<GameState>((set, get) => ({
         timeLeft: 0,
         status: isSuccess ? 'DAY_SUMMARY' : 'GAME_OVER'
       });
-    } else {
-      set({ timeLeft: timeLeft - 1 });
+      return;
     }
+
+    // ponytail: reuse existing 1s tickTimer (1.25%/s == 1%/0.8s) instead of a second 800ms interval
+    if (!activeOrder) {
+      set({ timeLeft: timeLeft - 1 });
+      return;
+    }
+
+    const nextPatience = Math.max(0, Math.round((customerPatience - 1.25) * 100) / 100);
+    if (nextPatience <= 0) {
+      set({
+        timeLeft: timeLeft - 1,
+        servedWrongCount: servedWrongCount + 1,
+        customerPatience: 100,
+        customerExpression: 'NEUTRAL',
+        isOrderConfirmed: false,
+        isClarified: false,
+        patiencePenaltyTrigger: 0,
+        currentCup: { ...initialCup },
+        currentSnack: 'NONE',
+        feedbackMessage: { text: 'Pelanggan pergi karena terlalu lama menunggu 😿', type: 'error' },
+        activeOrder: generateRandomOrder(currentDay),
+      });
+      return;
+    }
+
+    set({
+      timeLeft: timeLeft - 1,
+      customerPatience: nextPatience,
+      customerExpression: nextPatience < 40 && customerExpression === 'NEUTRAL' ? 'ANXIOUS' : customerExpression,
+    });
   },
 
   setBase: (base: DrinkBase) => {
